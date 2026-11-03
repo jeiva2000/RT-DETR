@@ -7,12 +7,13 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:a40:1             # 1x A40 en gpu04 (libre ahora mismo)
 #SBATCH --nodelist=gpu04             # comprueba antes con: scontrol show node gpu04
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 #SBATCH -t 24:00:00
 #SBATCH --export=NONE
 
-set -euo pipefail
+# -u se activa más abajo: /etc/profile, module y conda usan variables sin definir
+set -eo pipefail
 
 # No confiar en variables heredadas de la shell que lanzó el sbatch (login node
 # vs sesión interactiva pueden tener MODULEPATH distinto); reinicializar aquí,
@@ -42,7 +43,9 @@ export TORCH_CUDA_ARCH_LIST="8.0;8.6"   # cubre A30/A100 (8.0) y A40 (8.6)
 
 # --- Entorno conda ---
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate rtdetrv2                 # TODO: nombre de tu entorno conda
+conda activate rtdetr
+
+set -u
 
 # --- Diagnóstico (queda en el log) ---
 echo "===== ENV ====="
