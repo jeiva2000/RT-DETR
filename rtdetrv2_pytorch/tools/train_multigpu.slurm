@@ -18,6 +18,12 @@ set -eo pipefail
 # No confiar en variables heredadas de la shell que lanzó el sbatch (login node
 # vs sesión interactiva pueden tener MODULEPATH distinto); reinicializar aquí,
 # ya en el propio nodo de cómputo.
+# El módulo EasyBuild (software_subdir.py) usa el "python" del PATH; si es el de
+# miniconda (base, 3.13) falla al importar archspec. Quitar conda del PATH antes
+# de cargar módulos; se reactiva más abajo con conda.sh.
+export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v miniconda | paste -sd: -)
+unset PYTHONPATH PYTHONHOME CONDA_PREFIX CONDA_DEFAULT_ENV CONDA_SHLVL CONDA_EXE CONDA_PYTHON_EXE _CE_CONDA _CE_M
+
 source /etc/profile
 
 mkdir -p logs
